@@ -33,9 +33,10 @@ print(float(soup.find("p", class_ ="price").find_all("bdi")[-1].text.replace("$"
 #caracteristicas
 caracteristicas = []
 elementos = soup.find("div", class_ = "woocommerce-product-details__short-description").find_all("p")[-1].text.split("\n")
+print(elementos)
 for elemento in elementos:
     caracteristicas.append(elemento)
-    
+
 #url de la imagen
 
 print(soup.find("img", class_ ="attachment-woocommerce_single").attrs.get("src"))

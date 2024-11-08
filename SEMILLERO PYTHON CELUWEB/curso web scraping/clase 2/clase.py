@@ -18,7 +18,7 @@ soup = BeautifulSoup(res.text, "html.parser")
 soup.title.text
 
 #obtener el título de la página
-soup.find("h1", class_="product-heading__title").text
+print(soup.find("h1", class_="product-heading__title").text)
 
 #obtener el precio!
 soup.find("h2", class_="product-heading__pricing") #obtener todo el h2 que incluye los span 
@@ -45,6 +45,7 @@ elementos = soup.find("h3", class_="product-description__content").find_all("li"
 for elemento in elementos:
     descripciones.append(elemento.text)
 
+print(descripciones)
 #obtener enlace de la imagen!
 soup.find("img", {"class":"product-gallery__image"}).attrs
 soup.find("img", {"class":"product-gallery__image"}).attrs.get("src")
