@@ -3,11 +3,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from config_instagram import *
-from selenium.webdriver.support.ui import WebDriverWait #esperar por elementos en sentium
-from selenium.webdriver.support import expected_conditions as ec #condiciones en sentium
-from selenium.common.exceptions import TimeoutException #excepción de timeout en sentium
-import pickle #guardar/cargar las cookies
+from config_twt import *
+from selenium.webdriver.support.ui import WebDriverWait 
+from selenium.webdriver.support import expected_conditions as ec 
+from selenium.common.exceptions import TimeoutException 
+import pickle 
 import os
 
 def iniciar_chrome():
@@ -49,67 +49,56 @@ def iniciar_chrome():
     driver = webdriver.Chrome(service=s, options=options)
     return driver
 
-def login_instagram():
-
+def login_twt():
     #LOGIN CON COOKIES
-    #validar si existe el archivo
-    if os.path.isfile("instagram.cookies"):
-        #leer el archivo si existe
-        with open("instagram.cookies", "rb") as file:
+    if os.path.isfile("twt.cookies"):
+        with open("twt.cookies", "rb") as file:
             cookies = pickle.load(file)
-        #cargar robots.txt
-        driver.get("https://www.instagram.com/robots.txt")
-        #recorrer cookies para ir añadiendo al driver
+        driver.get("https://x.com/home")
         for cookie in cookies:
             driver.add_cookie(cookie)
-        driver.get("https://www.instagram.com/")
-        #comprobar que el login fue exitoso
+        driver.get("https://x.com/home")
         try:
             articulo = wait.until(ec.visibility_of_element_located((By.TAG_NAME, "article")))
-            print("Login por cookies completado!")
-            return "OK"
+            print("Login con cookies completado!")
         except TimeoutError:
             print("ERROR AL CARGAR EL FEED")
             return "ERRROR"
-    #LOGIN DESDE CERO
-    driver.get("https://www.instagram.com/")
-
-    wait.until(ec.visibility_of_element_located((By.NAME, "username")))
-    #encontrar el campo de username
-    usuario = driver.find_element(By.NAME, "username")
-    #escribir en el campo username
-    usuario.send_keys(USER_IG)
-    #encontrar el campo password
-    wait.until(ec.visibility_of_element_located((By.NAME, "password")))
-    contrasena = driver.find_element(By.NAME, "password")
-    #esribir en el campo password
-    contrasena.send_keys(PASS_IG)
-    #darlle a inciiar sesión
-    iniciarSesion = wait.until(ec.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']")))
-    iniciarSesion.click()
-    #darle a guardar información
-    guardarInformacion = wait.until(ec.element_to_be_clickable((By.XPATH, "//button[text() ='Guardar información']")))
-    guardarInformacion.click()
-    #comprobar que el login fue exitoso
+    #LOGIN DE CERO
+    driver.get("https://x.com/i/flow/login")
+    #ingresar usuario
+    usuario = wait.until(ec.visibility_of_element_located((By.NAME, "text")))
+    usuario.send_keys(USER_TWT)
+    #darle clic a siguiente
+    btnSiguiente = wait.until(ec.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Siguiente']]")))
+    btnSiguiente.click()
+    #ingresar contraseña
+    contrasena = wait.until(ec.visibility_of_element_located((By.NAME, "password")))
+    contrasena.send_keys(PASS_TWT)
+    #darle clic a iniciar sesión 
+    btnIniciarSesion = wait.until(ec.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Iniciar sesión']]")))
+    btnIniciarSesion.click()
+    #validar login exitoso
     try:
         articulo = wait.until(ec.visibility_of_element_located((By.TAG_NAME, "article")))
         print("Login de cero completado!")
     except TimeoutError:
         print("ERROR AL CARGAR EL FEED")
         return "ERRROR"
-    #guardar las cookies
-    cookies = driver.get_cookies()  
-    #guarda las cookies en el arcivo instagram.cookies de modo escritura binario
-    pickle.dump(cookies, open("instagram.cookies", "wb"))
-    print("cookies guardadas")
+    
+    #guardar cookies
+    #cookies = driver.get_cookies
+    #pickle.dump(cookies, open("twt.cookies", "wb"))
+    #print("cookies guardadas")
     return "OK"
+
 
 if __name__ == '__main__':
     #iniciar selenium
     driver = iniciar_chrome()
     wait = WebDriverWait(driver, 10)
     #loguear en ig
-    res = login_instagram()
+    res = login_twt()
     if res == "ERROR":
         driver.quit()       
     input("Pulse enter para salir")
