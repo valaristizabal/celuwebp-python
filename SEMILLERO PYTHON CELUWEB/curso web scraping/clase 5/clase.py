@@ -7,6 +7,8 @@ from config_instagram import *
 from selenium.webdriver.support.ui import WebDriverWait #esperar por elementos en sentium
 from selenium.webdriver.support import expected_conditions as ec #condiciones en sentium
 from selenium.common.exceptions import TimeoutException #excepción de timeout en sentium
+import pickle #guardar/cargar las cookies
+import os
 
 def iniciar_chrome():
     ruta = ChromeDriverManager().install()
@@ -48,6 +50,27 @@ def iniciar_chrome():
     return driver
 
 def login_instagram():
+
+    #LOGIN CON COOKIES
+    #validar si existe el archivo
+    if os.path.isfile("instagram.cookies"):
+        #leer el archivo si existe
+        with open("instagram.cookies", "rb") as file:
+            cookies = pickle.load(file)
+        #cargar robots.txt
+        driver.get("https://www.instagram.com/robots.txt")
+        #recorrer cookies para ir añadiendo al driver
+        for cookie in cookies:
+            driver.add_cookie(cookie)
+        driver.get("https://www.instagram.com/")
+        #comprobar que el login fue exitoso
+        try:
+            articulo = wait.until(ec.visibility_of_element_located((By.TAG_NAME, "article")))
+            print("Login por cookies completado!")
+            return "OK"
+        except TimeoutError:
+            print("ERROR AL CARGAR EL FEED")
+            return "ERRROR"
     #LOGIN DESDE CERO
     driver.get("https://www.instagram.com/")
 
@@ -67,6 +90,19 @@ def login_instagram():
     #darle a guardar información
     guardarInformacion = wait.until(ec.element_to_be_clickable((By.XPATH, "//button[text() ='Guardar información']")))
     guardarInformacion.click()
+    #comprobar que el login fue exitoso
+    try:
+        articulo = wait.until(ec.visibility_of_element_located((By.TAG_NAME, "article")))
+        print("Login de cero completado!")
+    except TimeoutError:
+        print("ERROR AL CARGAR EL FEED")
+        return "ERRROR"
+    #guardar las cookies
+    cookies = driver.get_cookies()  
+    #guarda las cookies en el arcivo instagram.cookies de modo escritura binario
+    pickle.dump(cookies, open("instagram.cookies", "wb"))
+    print("cookies guardadas")
+    return "OK"
 if __name__ == '__main__':
     #iniciar selenium
     driver = iniciar_chrome()
