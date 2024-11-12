@@ -20,7 +20,7 @@ app = Flask(__name__)
 def login_wattpad(driver, wait):
     driver.get("https://www.wattpad.com/login")
     clic_iniciar_sesion = wait.until(ec.element_to_be_clickable((By.CSS_SELECTOR, ".submit-btn-new"))).clic()
-
+    
 
 
 @app.route('/buscar', methods=['POST'])
@@ -31,4 +31,4 @@ def buscar():
 
 if __name__ == "__main__":
 
-    #app.run(debug=True)    
+    app.run(debug=True)    
