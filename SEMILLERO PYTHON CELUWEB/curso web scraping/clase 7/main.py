@@ -6,8 +6,8 @@ from selenium.webdriver.common.by import By
 from config_chrome_undetectedChromedriver import *
 from user_gmail import *
 from selenium.webdriver.support.ui import WebDriverWait 
-from selenium.webdriver.support import expected_conditions as ec 
-from selenium.webdriver.common.keys import Keys 
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.common.keys import Keys
 
 if __name__ == '__main__':
     driver = iniciar_webdriver(pos="derecha")
